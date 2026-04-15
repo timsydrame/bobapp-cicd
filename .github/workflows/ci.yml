@@ -25,3 +25,22 @@ jobs:
       - name: Lancer les tests back + rapport JaCoCo
         run: mvn clean install
         working-directory: back
+  test-front:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Installer les dépendances
+        run: npm install
+        working-directory: front
+
+      - name: Lancer les tests front + couverture
+        run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
+        working-directory: front
