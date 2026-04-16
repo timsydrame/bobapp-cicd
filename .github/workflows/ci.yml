@@ -74,4 +74,4 @@ jobs:
         with:
           context: ./front
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }} -Dsonar.qualitygate.wait=false/bobapp-front:latest
