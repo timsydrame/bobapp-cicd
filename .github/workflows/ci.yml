@@ -25,6 +25,12 @@ jobs:
         run: mvn clean install
         working-directory: back
 
+      - name: Installer Java 17 pour SonarCloud
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       - name: Analyse SonarCloud back
         run: mvn sonar:sonar -Dsonar.projectKey=timsydrame_bobapp-cicd -Dsonar.organization=timsydrame -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=${{ secrets.SONAR_TOKEN }} -Dsonar.qualitygate.wait=false
         working-directory: back
