@@ -1,0 +1,70 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Connexion Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build image back
+        uses: docker/build-push-action@v5
+        with:
+          context: ./back
+          push: false
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build image front
+        uses: docker/build-push-action@v5
+        with:
+          context: ./front
+          push: false
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  push:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v3
+
+      - name: Connexion Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Push image back
+        uses: docker/build-push-action@v5
+        with:
+          context: ./back
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:latest
+          cache-from: type=gha
+
+      - name: Push image front
+        uses: docker/build-push-action@v5
+        with:
+          context: ./front
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:latest
+          cache-from: type=gha
