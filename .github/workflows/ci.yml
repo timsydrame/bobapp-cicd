@@ -53,6 +53,12 @@ jobs:
       - name: Lancer les tests front + couverture
         run: npm run test -- --watch=false --browsers=ChromeHeadless --code-coverage
         working-directory: front
+      - name: SonarCloud Scan - Front
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: ./front
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONT }}
 
   docker:
     runs-on: ubuntu-latest
